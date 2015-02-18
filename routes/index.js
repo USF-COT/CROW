@@ -15,8 +15,20 @@ router.get('/', function(req, res, next) {
     }
 
     res.render('index', {
-        title: 'Express',
+        title: 'Centralized Remote Observations Website',
         bundle_url: bundle_url
+    });
+});
+
+var db = require('mongoskin').db('mongodb://localhost:27017/CROW');
+
+router.get('/feeds', function(req, res, next){
+    db.collection('feeds').find({}, {_id: 0}).toArray(function(err, result) {
+        if(!err){
+            res.jsonp(result);
+        } else {
+            res.status(500).jsonp({ "error": "Unable to connect to database"});
+        }
     });
 });
 

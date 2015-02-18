@@ -1,16 +1,15 @@
 var React = require('react');
-var MapPanel = require('./MapPanel.jsx');
+var MapManager = require('./MapManager.jsx');
+var Actions = require('../actions.jsx');
 
 var CROWApp = React.createClass({
-    getInitialState: function() {
-        return {
-            layers: []
-        };
+    componentWillMount: function(){
+        Actions.loadFeeds();
     },
 
     render: function() {
         return (
-            <MapPanel />
+            <MapManager />
         );
     }
 });
