@@ -2,6 +2,7 @@ var React = require('react');
 var GoogleMapsLoader = require('google-maps');
 var LogoPanel = require('./LogoPanel.jsx');
 var NavBar = require('./NavBar.jsx');
+var PlotPanel = require('./PlotPanel.jsx');
 var Actions = require('../actions.jsx');
 
 var MapStore = require('../stores/MapStore.jsx');
@@ -29,7 +30,7 @@ var MapManager = React.createClass({
 
             // Create sets of keys for differencing below
             var currentKeys = _.keys(this.visibleSourceKML[source_url]);
-            var newKeys = _.keys(visibleSource);
+            var newKeys = _.keys(visibleSource.layers);
 
             // Add newly visible layers
             var addedKeys = _.difference(newKeys, currentKeys);
@@ -97,6 +98,7 @@ var MapManager = React.createClass({
                 <div id="map-canvas"></div>
                 <LogoPanel position="TOP_LEFT" />
                 <NavBar position="TOP_CENTER" sources={this.state.sources} />
+                <PlotPanel position="BOTTOM_CENTER" />
             </div>
         );
     }
