@@ -5,7 +5,9 @@ var Reflux = require('reflux');
 var Actions = Reflux.createActions({
     "mapLoaded": {},
     "loadFeeds": {children: ["completed", "failed"]},
-    "loadLayers": {children: ["completed", "failed"]},
+    "loadSource": {children: ["completed", "failed"]},
+    "showLayer": {},
+    "hideLayer": {},
     "layerSelected": {},
     "layerUnselected": {},
 });
@@ -19,14 +21,13 @@ Actions.loadFeeds.preEmit = function(){
     });
 };
 
-Actions.loadLayers.preEmit = function(url){
+Actions.loadSource.preEmit = function(url){
     $.ajax({
         dataType: "jsonp",
         url: url + "/layers",
-        success: Actions.loadLayers.completed,
-        failure: Actions.loadLayers.failed
+        success: Actions.loadSource.completed,
+        failure: Actions.loadSource.failed
     });
 };
-
 
 module.exports = Actions;

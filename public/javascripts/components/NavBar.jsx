@@ -1,13 +1,40 @@
 var React = require('react');
 var MapPanelMixin = require('./MapPanelMixin.jsx');
+var Actions = require('../actions.jsx');
+
+var _ = require('lodash');
 
 var LayerItem = React.createClass({
-    onClick: function(e){
-        e.stopPropagation();
+    getInitialState: function(){
+        return {
+            "checked": false
+        };
     },
 
     onChange: function(e){
-        console.log(e);
+        if(e.target.checked){
+            Actions.showLayer(this.props.source.url, this.props.layer.uri);
+        } else {
+            Actions.hideLayer(this.props.source.url, this.props.layer.uri);
+        }
+    },
+
+    componentDidMount: function(){
+        Actions.showLayer.listen(function(source_url, layer_uri){
+            if((source_url == this.props.source.url) && (layer_uri == this.props.layer.uri)){
+                this.setState({
+                    "checked": true
+                });
+            }
+        }, this);
+
+        Actions.hideLayer.listen(function(source_url, layer_uri){
+            if((source_url == this.props.source.url) && (layer_uri == this.props.layer.uri)){
+                this.setState({
+                    "checked": false
+                });
+            }
+        }, this);
     },
 
     render: function(){
@@ -15,7 +42,7 @@ var LayerItem = React.createClass({
             <li onClick={this.onClick}>
                 <div className="checkbox">
                     <label>
-                        <input type="checkbox" onChange={this.onChange} /> {this.props.layer.name}
+                        <input type="checkbox" onChange={this.onChange} checked={this.state.checked} /> {this.props.layer.name}
                     </label>
                 </div>
             </li>
@@ -25,7 +52,7 @@ var LayerItem = React.createClass({
 
 var NavBarDropDown = React.createClass({
     render: function(){
-        var categorizedLayers = _.groupBy(this.props.layers, function(layer){
+        var categorizedLayers = _.groupBy(this.props.source.layers, function(layer){
             return layer.station_type;
         });
 
@@ -33,11 +60,11 @@ var NavBarDropDown = React.createClass({
         _.each(categorizedLayers, function(layers, category){
             var layerItems = layers.map(function(layer){
                 return (
-                    <LayerItem key={layer.uri} layer={layer} />
+                    <LayerItem key={layer.uri} source={this.props.source} layer={layer} />
                 );
-            });
+            }, this);
             sourceLayers.push(
-                <div key={this.props.provider.short_name + "." + category}>
+                <div key={this.props.source.provider.short_name + "." + category}>
                     <label className="layer-group-header">{category}</label>
                     <ul className="layer-group-ul">
                         {layerItems}
@@ -48,7 +75,7 @@ var NavBarDropDown = React.createClass({
 
         return (
             <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{this.props.provider.short_name}<span className="caret"></span></a>
+                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{this.props.source.provider.short_name}<span className="caret"></span></a>
                 <ul className="dropdown-menu layers-ul" role="menu">
                     {sourceLayers}
                 </ul>
@@ -63,9 +90,9 @@ var NavBar = React.createClass({
     render: function(){
         var dropDowns = [];
         if(this.props.sources){
-            dropDowns = this.props.sources.map(function(source){
-                return (
-                    <NavBarDropDown key={source.provider.url} provider={source.provider} layers={source.layers} />
+            _.each(this.props.sources, function(source){
+                dropDowns.push(
+                    <NavBarDropDown key={source.provider.url} source={source} />
                 );
             });
         }

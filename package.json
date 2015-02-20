@@ -46,13 +46,16 @@
   "homepage": "https://github.com/USF-COT/CROW",
   "browserify": {
     "transform": [
-      "browserify-shim",
       "reactify",
+      "browserify-shim",
       "envify"
     ]
   },
   "browserify-shim": {
-    "jquery": "global:$"
+    "jquery": "global:$",
+    "lodash": "global:_",
+    "react": "global:React",
+    "d3": "global:d3"
   },
   "jest": {
     "rootDir": "./public/javascripts"
