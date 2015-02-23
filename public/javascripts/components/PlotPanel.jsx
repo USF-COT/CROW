@@ -1,6 +1,7 @@
 var React = require('react');
 var MapPanelMixin = require('./MapPanelMixin.jsx');
 var PlotForm = require('./PlotForm.jsx');
+var PlotSVG = require('./PlotSVG.jsx');
 
 var PlotPanel = React.createClass({
     mixins: [MapPanelMixin],
@@ -16,6 +17,7 @@ var PlotPanel = React.createClass({
             <div className="panel-body">
                 <div className="container-fluid">
                     <PlotForm />
+                    <PlotSVG />
                 </div>
             </div>
         </div>

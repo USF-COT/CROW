@@ -1,5 +1,6 @@
 var React = require('react');
 var Reflux = require('reflux');
+var Actions = require('../actions.jsx');
 
 var VisibleSourcesStore = require('../stores/VisibleSourcesStore.jsx');
 var SelectedLayerStore = require('../stores/SelectedLayerStore.jsx');
@@ -12,7 +13,7 @@ var PlotForm = React.createClass({
 
     onPlotFormSubmit: function(e){
         e.preventDefault();
-        console.log(this.state);
+        Actions.addPlotField(this.state.selected_source_url, this.state.selected_layer_uri, this.state.selected_field_uri);
     },
 
     getInitialState: function(){

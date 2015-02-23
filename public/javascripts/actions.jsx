@@ -10,7 +10,10 @@ var Actions = Reflux.createActions({
     "hideLayer": {},
     "layerSelected": {},
     "layerUnselected": {},
-    "timeRangeChanged": {}
+    "timeRangeChanged": {},
+    "addPlotField": {},
+    "loadPlotData": {children: ["completed", "failed"]},
+    "removePlotField": {}
 });
 
 Actions.loadFeeds.preEmit = function(){
