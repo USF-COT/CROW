@@ -8,23 +8,11 @@ var $ = require('jquery');
 var moment = require('moment');
 
 var TimeRangeForm = React.createClass({
-    mixins: [Reflux.connect(TimeRangeStore, "range")],
+    mixins: [Reflux.listenTo(TimeRangeStore, "onRangeChange")],
 
-    getInitialState: function(){
-        return {
-            "range": {
-                "start": moment().subtract(5, 'days'),
-                "end": moment()
-            }
-        };
-    },
-
-    onStartRangeChange: function(e){
-        Actions.timeRangeChanged(e.target.value, this.state.range.end);
-    },
-
-    onEndRangeChange: function(e){
-        Actions.timeRangeChanged(this.state.range.start, e.target.value);
+    onRangeChange: function(range){
+        $('#startDatePicker').data("DateTimePicker").date(range.start);
+        $('#endDatePicker').data("DateTimePicker").date(range.end);
     },
 
     componentDidMount: function(){
@@ -33,14 +21,16 @@ var TimeRangeForm = React.createClass({
 
         $('#startDatePicker').on("dp.change", function(e){
             $('#endDatePicker').data("DateTimePicker").minDate(e.date);
+            Actions.timeRangeChanged(e.date, TimeRangeStore.range.end);
         });
 
         $('#endDatePicker').on("dp.change", function(e){
             $('#startDatePicker').data("DateTimePicker").maxDate(e.date);
+            Actions.timeRangeChanged(TimeRangeStore.range.start, e.date);
         });
 
-        $('#startDatePicker').data("DateTimePicker").date(this.state.range.start);
-        $('#endDatePicker').data("DateTimePicker").date(this.state.range.end);
+        $('#startDatePicker').data("DateTimePicker").date(TimeRangeStore.range.start);
+        $('#endDatePicker').data("DateTimePicker").date(TimeRangeStore.range.end);
     },
 
     render: function(){
@@ -48,12 +38,12 @@ var TimeRangeForm = React.createClass({
 <form className={this.props.formClass}>
     <div className="form-group">
         <label for="startDate">From:</label>
-        <input id="startDatePicker" name="startDate" type="text" className="form-control" onChange={this.onStartRangeChange} />
+        <input id="startDatePicker" name="startDate" type="text" className="form-control" />
     </div>
 
     <div className="form-group">
         <label for="endDate">to</label>
-        <input id="endDatePicker" name="endDate" type="text" className="form-control" onChange={this.onEndRangeChange} />
+        <input id="endDatePicker" name="endDate" type="text" className="form-control" />
     </div>
 </form>
         );
