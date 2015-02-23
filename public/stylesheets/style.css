@@ -35,7 +35,7 @@ h1, h2, h3{
 }
 
 #nav-container{
-    width: 50%;
+    width: 70%;
     margin: auto;
 }
 
@@ -66,6 +66,12 @@ h1, h2, h3{
 
 #plot-region{
     margin: 0 0 50px 0;
+    width: 100%;
+}
+
+#plot-container{
+    width: 70%;
+    margin: auto;
 }
 
 #plot-panel{

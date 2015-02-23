@@ -5,9 +5,8 @@ var NavBar = require('./NavBar.jsx');
 var PlotPanel = require('./PlotPanel.jsx');
 var Actions = require('../actions.jsx');
 
-var MapStore = require('../stores/MapStore.jsx');
 var SourcesStore = require('../stores/SourcesStore.jsx');
-var VisibleSourcesStore = require('../stores/VisibleSourcesStore.jsx');
+var KMLLayerStore = require('../stores/KMLLayerStore.jsx');
 
 var Reflux = require('reflux');
 
@@ -16,48 +15,8 @@ var _ = require('lodash');
 var MapManager = React.createClass({
     mixins: [
         Reflux.connect(SourcesStore, "sources"),
-        Reflux.listenTo(VisibleSourcesStore, "onVisibleSourcesChange")
+        Reflux.connect(KMLLayerStore, "visibleSourceKML")
     ],
-
-    visibleSourceKML: {},
-    onVisibleSourcesChange: function(visibleSources){
-        // For each visible source
-        _.each(visibleSources, function(visibleSource, source_url){
-            // Create a new visible KML source group if necessary
-            if(!(source_url in this.visibleSourceKML)){
-                this.visibleSourceKML[source_url] = {};
-            }
-
-            // Create sets of keys for differencing below
-            var currentKeys = _.keys(this.visibleSourceKML[source_url]);
-            var newKeys = _.keys(visibleSource.layers);
-
-            // Add newly visible layers
-            var addedKeys = _.difference(newKeys, currentKeys);
-            addedKeys.forEach(function(layer_uri){
-                var url = "http://" + source_url + "/layer/" + layer_uri + "/kml";
-                var kml = new MapStore.google.maps.KmlLayer({
-                    url: url,
-                    preserveViewport: true
-                });
-                kml.setMap(MapStore.map);
-
-                MapStore.google.maps.event.addListener(kml, 'click', function(){
-                    Actions.layerSelected(source_url, layer_uri);
-                });
-
-                this.visibleSourceKML[source_url][layer_uri] = kml;
-            }, this);
-
-            // Remove no longer visible layers
-            var removedKeys = _.difference(currentKeys, newKeys);
-            removedKeys.forEach(function(layer_uri){
-                this.visibleSourceKML[source_url][layer_uri].setMap(null);
-                MapStore.google.maps.event.clearInstanceListeners(this.visibleSourceKML[source_url][layer_uri]);
-                delete this.visibleSourceKML[source_url][layer_uri];
-            }, this);
-        }, this);
-    },
 
     componentDidMount: function(){
         // Google Map load call done here because coupling to DOM in render method

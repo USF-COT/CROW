@@ -10,6 +10,7 @@ var Actions = Reflux.createActions({
     "hideLayer": {},
     "layerSelected": {},
     "layerUnselected": {},
+    "timeRangeChanged": {}
 });
 
 Actions.loadFeeds.preEmit = function(){

@@ -2,6 +2,8 @@ var React = require('react');
 var MapPanelMixin = require('./MapPanelMixin.jsx');
 var Actions = require('../actions.jsx');
 
+var TimeRangeForm = require('./TimeRangeForm.jsx');
+
 var _ = require('lodash');
 
 var LayerItem = React.createClass({
@@ -99,7 +101,7 @@ var NavBar = React.createClass({
 
         return (
             <div id="nav-region">
-                <div id="nav-container">
+                <div id="nav-container" className="control-box">
                     <nav className="navbar navbar-default">
                         <div className="container-fluid">
                           <div className="navbar-header">
@@ -116,6 +118,7 @@ var NavBar = React.createClass({
                             <ul className="nav navbar-nav">
                                 {dropDowns}
                             </ul>
+                            <TimeRangeForm formClass="navbar-form navbar-right" />
                           </div>
                         </div>
                     </nav>
