@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "watch-js": "BROWSERIFYSHIM_DIAGNOSTICS=1 watchify public/javascripts/client.jsx -o public/javascripts/bundle.js -v -d",
+    "watch-js": "watchify public/javascripts/client.jsx -o public/javascripts/bundle.js -v -d",
     "start": "node ./bin/www",
     "build": "NODE_ENV=production browserify . | uglifyjs -cm > public/javascripts/bundle.min.js",
     "test": "jest"
