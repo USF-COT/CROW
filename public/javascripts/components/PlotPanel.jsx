@@ -8,8 +8,8 @@ var PlotPanel = React.createClass({
     render: function(){
         return (
 <div id="plot-region">
-    <div id="plot-container">
-        <div id="plot-panel" className="panel">
+    <div id="plot-container" className="control-box">
+        <div class="plot-panel" className="panel">
             <div className="panel-heading">
                 <h3 className="panel-title">Plot Data</h3>
             </div>
