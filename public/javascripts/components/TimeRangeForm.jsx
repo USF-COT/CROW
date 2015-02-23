@@ -20,11 +20,11 @@ var TimeRangeForm = React.createClass({
     },
 
     onStartRangeChange: function(e){
-        Action.timeRangeChanged(e.target.value, this.state.range.end);
+        Actions.timeRangeChanged(e.target.value, this.state.range.end);
     },
 
     onEndRangeChange: function(e){
-        Action.timeRangeChanged(this.state.range.start, e.target.value);
+        Actions.timeRangeChanged(this.state.range.start, e.target.value);
     },
 
     componentDidMount: function(){

@@ -66,7 +66,7 @@ var PlotForm = React.createClass({
         sourceOptions.push(emptyOption);
         _.each(this.state.sources, function(source){
             sourceOptions.push(
-                <option value={source.url}>{source.provider.short_name}</option>
+                <option value={source.url} selected={source.url === this.state.selected_source_url}>{source.provider.short_name}</option>
             );
         }, this);
 
@@ -76,7 +76,7 @@ var PlotForm = React.createClass({
         if(layers){
             _.each(layers, function(layer){
                 layerOptions.push(
-                    <option value={layer.uri}>{layer.name}</option>
+                    <option value={layer.uri} selected={layer.uri === this.state.selected_layer_uri}>{layer.name}</option>
                 );
             }, this);
         }
@@ -87,9 +87,9 @@ var PlotForm = React.createClass({
         if(layer){
             _.each(layer.fields, function(field){
                 fieldOptions.push(
-                    <option value={field.uri}>{field.name}</option>
+                    <option value={field.uri} selected={field.uri === this.state.selected_field_uri}>{field.name}</option>
                 );
-            });
+            }, this);
         }
 
         return (
@@ -99,21 +99,21 @@ var PlotForm = React.createClass({
             
             <div className="form-group">
                 <label className="sr-only">Data Source</label>
-                <select name="source_url" className="form-control plot-select" value={this.state.selected_source_url} onChange={this.onFormSourceSelect}>
+                <select name="source_url" className="form-control plot-select" onChange={this.onFormSourceSelect}>
                     {sourceOptions}
                 </select>
             </div>
 
             <div className="form-group">
                 <label className="sr-only">Layer</label>
-                <select name="layer_uri" className="form-control plot-select" value={this.state.selected_layer_uri} onChange={this.onFormLayerSelect}>
+                <select name="layer_uri" className="form-control plot-select"  onChange={this.onFormLayerSelect}>
                     {layerOptions}
                 </select>
             </div>
 
             <div className="form-group">
                 <label className="sr-only">Field</label>
-                <select name="field_uri" className="form-control plot-select" value={this.state.selected_field_uri} onChange={this.onFormFieldSelect}>
+                <select name="field_uri" className="form-control plot-select"  onChange={this.onFormFieldSelect}>
                     {fieldOptions}
                 </select>
             </div>

@@ -2,6 +2,7 @@ var Reflux = require('reflux');
 
 var MapStore = require('./MapStore.jsx');
 var VisibleSourcesStore = require('./VisibleSourcesStore.jsx');
+var TimeRangeStore = require('./TimeRangeStore.jsx');
 
 var Actions = require('../actions.jsx');
 
@@ -17,6 +18,14 @@ var KMLLayerStore = Reflux.createStore({
         this.onVisibleSourcesChange(VisibleSourcesStore.sources);
 
         this.listenTo(VisibleSourcesStore, this.onVisibleSourcesChange);
+        this.listenTo(TimeRangeStore, this.onTimeRangeChange);
+    },
+
+    _genURL: function(source_url, layer_uri){
+        var url = "http://" + source_url + "/layer/" + layer_uri + "/kml";
+        url += "?start=" + TimeRangeStore.range.start;
+        url += "&end=" + TimeRangeStore.range.end;
+        return url;
     },
 
     onVisibleSourcesChange: function(visibleSources){
@@ -34,7 +43,7 @@ var KMLLayerStore = Reflux.createStore({
             // Add newly visible layers
             var addedKeys = _.difference(newKeys, currentKeys);
             addedKeys.forEach(function(layer_uri){
-                var url = "http://" + source_url + "/layer/" + layer_uri + "/kml";
+                var url = this._genURL(source_url, layer_uri);
                 var kml = new MapStore.google.maps.KmlLayer({
                     url: url,
                     preserveViewport: true
@@ -54,6 +63,15 @@ var KMLLayerStore = Reflux.createStore({
                 this.visibleSourceKML[source_url][layer_uri].setMap(null);
                 MapStore.google.maps.event.clearInstanceListeners(this.visibleSourceKML[source_url][layer_uri]);
                 delete this.visibleSourceKML[source_url][layer_uri];
+            }, this);
+        }, this);
+    },
+
+    onTimeRangeChange: function(range){
+        _.each(this.visibleSourceKML, function(visibleSources, source_url){
+            _.each(this.visibleSourceKML[source_url], function(layer, layer_uri){
+                var url = this._genURL(source_url, layer_uri);
+                this.visibleSourceKML[source_url][layer_uri].setUrl(url);
             }, this);
         }, this);
     }
