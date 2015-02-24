@@ -1,7 +1,6 @@
 var React = require('react');
 var Reflux = require('reflux');
 
-var TimeRangeStore = require('../stores/TimeRangeStore.jsx');
 var DatasetsStore = require('../stores/DatasetsStore.jsx');
 
 var d3 = require('d3');
@@ -16,18 +15,9 @@ var PlotSVG = React.createClass({
         'left': 20
     },
 
-    onTimeRangeChange: function(range){
-        this.timeScale.domain([range.start.toDate(), range.end.toDate()]);
-
-        var timeAxis = d3.svg.axis().scale(this.timeScale).orient("bottom");
-        this.svg.select('#timeAxis')
-            .transition().duration(1000).ease('sin-in-out')
-            .call(timeAxis);
-    },
-
-    setupTimeAxis: function(){
+    setupAxis: function(){
         this.timeScale = d3.time.scale()
-            .domain([TimeRangeStore.range.start.toDate(), TimeRangeStore.range.end.toDate()])
+            .domain([DatasetsStore.range.start.toDate(), DatasetsStore.range.end.toDate()])
             .range([this.margins.left, this.dim.width + this.margins.left]);
         this.timeScale.ticks(d3.time.hour, 12);
 
@@ -37,14 +27,49 @@ var PlotSVG = React.createClass({
             .attr("class", "timeX axis")
             .attr("transform", "translate(0,"+(this.dim.height+this.margins.top)+")")
             .call(timeAxis);
+
+        this.yScale = d3.scale.linear()
+            .range([(this.margins.top + this.dim.height), this.margins.top]);
+
+        this.colorScale = d3.scale.category20();
     },
 
-    onDatasetsChange: function(datasets){
+    onDatasetsChange: function(range, datasets){
+        // Update time scale
+        this.timeScale.domain([range.start.toDate(), range.end.toDate()]);
+
+        var timeAxis = d3.svg.axis().scale(this.timeScale).orient("bottom");
+        this.svg.select('#timeAxis')
+            .transition().duration(1000).ease('sin-in-out')
+            .call(timeAxis);
+
+        // Update plots
+        var timeScale = this.timeScale;
+        var yScale = this.yScale;
+        var colorScale = this.colorScale;
+
         var datasetGroups = this.svg.selectAll('.dataset')
             .data(datasets);
-        
+
         datasetGroups.enter().append('g')
-            .attr('class', 'dataset');
+            .attr('class', 'dataset')
+            .append('path').attr('class','line');
+
+        datasetGroups.select('path')
+                .attr('stroke', function(dataset, i){
+                    return colorScale(i % 20);
+                })
+                .attr('d', function(dataset){
+                    var extent = d3.extent(dataset.data, function(d) { return d[1]; });
+                    yScale.domain(extent);
+                    var line = d3.svg.line()
+                        .interpolate('linear')
+                        .x(function(pair) { return timeScale(new Date(pair[0] * 1000)); })
+                        .y(function(pair) { return yScale(pair[1]); });
+
+                    return line(dataset.data);
+                });
+
         datasetGroups.exit().remove();
     },
 
@@ -55,9 +80,8 @@ var PlotSVG = React.createClass({
             width: parseInt(this.svg.style('width')) - (this.margins.left + this.margins.right)
         };
 
-        this.setupTimeAxis();
+        this.setupAxis();
 
-        this.listenTo(TimeRangeStore, this.onTimeRangeChange);
         this.listenTo(DatasetsStore, this.onDatasetsChange);
     },
 
