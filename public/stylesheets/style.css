@@ -78,6 +78,10 @@ h1, h2, h3{
     margin: 0 10px;
 }
 
+#plots-area{
+    width: 100%;
+}
+
 .layers-ul{
     height: 300px;
     overflow: auto;

@@ -5,7 +5,7 @@
   shape-rendering: crispEdges;
 }
 
-.x.axis path {
+#timeAxis path {
   display: none;
 }
 

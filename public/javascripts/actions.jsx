@@ -11,9 +11,9 @@ var Actions = Reflux.createActions({
     "layerSelected": {},
     "layerUnselected": {},
     "timeRangeChanged": {},
-    "addPlotField": {},
-    "loadPlotData": {children: ["completed", "failed"]},
-    "removePlotField": {}
+    "addDataset": {},
+    "loadDataset": {children: ["completed", "failed"]},
+    "removeDataset": {}
 });
 
 Actions.loadFeeds.preEmit = function(){

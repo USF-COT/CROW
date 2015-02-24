@@ -13,7 +13,7 @@ var PlotForm = React.createClass({
 
     onPlotFormSubmit: function(e){
         e.preventDefault();
-        Actions.addPlotField(this.state.selected_source_url, this.state.selected_layer_uri, this.state.selected_field_uri);
+        Actions.addDataset(this.state.selected_source_url, this.state.selected_layer_uri, this.state.selected_field_uri);
     },
 
     getInitialState: function(){
