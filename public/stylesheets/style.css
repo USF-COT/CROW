@@ -74,12 +74,16 @@ h1, h2, h3{
     margin: auto;
 }
 
-#plot-panel{
-    margin: 0 10px;
-}
-
 #plots-area{
     width: 100%;
+}
+
+#plot-panel-title{
+    display: inline;
+}
+
+#plot-panel-body{
+    padding: 5px;
 }
 
 .layers-ul{

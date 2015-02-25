@@ -12,13 +12,10 @@ var PlotPanel = React.createClass({
     <div id="plot-container" className="control-box">
         <div class="plot-panel" className="panel">
             <div className="panel-heading">
-                <h3 className="panel-title">Plot Data</h3>
+                <PlotForm />
             </div>
-            <div className="panel-body">
-                <div className="container-fluid">
-                    <PlotForm />
-                    <PlotSVG />
-                </div>
+            <div className="container-fluid">
+                <PlotSVG />
             </div>
         </div>
     </div>

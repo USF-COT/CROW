@@ -47,7 +47,7 @@ var PlotForm = React.createClass({
         });
     },
 
-    onFormFieldSelect: function(field){
+    onFormFieldSelect: function(event){
         this.setState({
             "selected_field_uri": event.target.value
         });
@@ -97,7 +97,9 @@ var PlotForm = React.createClass({
 <div className="row">
     <div className="col-md-12">
         <form className="form-inline" onSubmit={this.onPlotFormSubmit}>
-            
+            <div className="form-group">
+                <h4 id="plot-panel-title">Plot Data</h4>
+            </div>
             <div className="form-group">
                 <label className="sr-only">Data Source</label>
                 <select name="source_url" className="form-control plot-select" onChange={this.onFormSourceSelect}>

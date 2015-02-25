@@ -11,6 +11,11 @@
 
 .line {
   fill: none;
-  stroke: steelblue;
   stroke-width: 1.5px;
+}
+
+.touch-bar {
+    fill: none;
+    stroke: black;
+    stroke-width: 1.5px;
 }

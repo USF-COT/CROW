@@ -4,11 +4,14 @@ var Actions = require('../actions.jsx');
 var TimeRangeStore = require('./TimeRangeStore.jsx');
 
 var $ = require('jquery');
+var d3 = require('d3');
 
 var DatasetsStore = Reflux.createStore({
     init: function(){
         this.range = TimeRangeStore.range;
         this.datasets = [];
+
+        this.colors = d3.scale.category10();
 
         this.listenTo(Actions.addDataset, this.onAddDataset);
         this.listenTo(Actions.removeDataset, this.onRemoveDataset);
@@ -75,11 +78,12 @@ var DatasetsStore = Reflux.createStore({
         dataset.field_uri = field_uri;
 
         var index = this.findDatasetIndex(source_url, layer_uri, field_uri);
-
         // Update existing
         if(index != -1){
+            dataset.color = this.colors(index % 10);
             this.datasets[index] = dataset;
         } else { // Insert new dataset
+            dataset.color = this.colors(this.datasets.length % 10);
             this.datasets.push(dataset);
         }
     },
