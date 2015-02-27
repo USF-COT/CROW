@@ -25,3 +25,7 @@
     stroke: black;
     stroke-width: 1px;
 }
+
+.time-value {
+    font-weight: bold;
+}

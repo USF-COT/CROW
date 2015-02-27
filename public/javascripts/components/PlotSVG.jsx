@@ -17,7 +17,7 @@ var PlotSVG = React.createClass({
     },
 
     setupAxis: function(){
-        this.timeScale = d3.time.scale()
+        this.timeScale = d3.time.scale.utc()
             .domain([DatasetsStore.range.start.toDate(), DatasetsStore.range.end.toDate()])
             .range([this.margins.left, this.dim.width + this.margins.left]);
         this.timeScale.ticks(d3.time.hour, 12);
@@ -58,11 +58,15 @@ var PlotSVG = React.createClass({
         touchBarGroup
             .append('line');
 
-        touchBarGroup
+        var legendElement = touchBarGroup
             .append('g')
-                .attr('class', 'legend')
-                .append('rect')
-                    .attr('class', 'legend-background');
+                .attr('class', 'legend');
+
+        legendElement.append('rect')
+            .attr('class', 'legend-background');
+
+        legendElement.append('text')
+            .attr('class', 'time-value');
 
         var dim = this.dim;
         var timeScale = this.timeScale;
@@ -78,8 +82,8 @@ var PlotSVG = React.createClass({
 
         var legend = touchBarData.select('.legend')
             .attr('render-order', 1)
-            .attr('transform', function(dataset){
-                var touchBarPosition = parseFloat(touchBarLine.attr('x1'));
+            .attr('transform', function(touch){
+                var touchBarPosition = touch[0];
                 var barOffset = 5; // Get it off the touch bar
                 var width = this.getBBox().width;
                 var position = touchBarPosition + barOffset;
@@ -88,6 +92,18 @@ var PlotSVG = React.createClass({
                 }
                 return "translate("+position+", 0)";
             });
+
+        legend.select('.time-value')
+            .text(function(touch){
+                var time = timeScale.invert(touch[0]);
+                return time.toISOString();
+            })
+            .attr('x', 0)
+            .attr('y', function(touch){
+                return this.getBBox().height;
+            })
+            .attr('dx', 5)
+            .attr('dy', 2);
 
         var datasetGroup = legend.selectAll('.dataset-value')
             .data(DatasetsStore.datasets);
@@ -121,7 +137,7 @@ var PlotSVG = React.createClass({
             })
             .attr('x', 0)
             .attr('y', function(dataset, i) {
-                return (i+1)*this.getBBox().height;
+                return (i+2)*this.getBBox().height;
             })
             .attr('dx', 5)
             .attr('dy', 2);
