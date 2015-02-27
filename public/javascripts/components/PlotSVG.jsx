@@ -48,13 +48,21 @@ var PlotSVG = React.createClass({
     },
 
     updateBars: function(points){
-        var touchBar = this.svg.selectAll('.touch-bar')
+        var touchBarData = this.svg.selectAll('.touch-bar-group')
             .data(points, function(d) { return d.identifier; });
 
-        touchBar.enter()
+        var touchBarGroup = touchBarData.enter()
             .append('g')
-            .attr('class', 'touch-bar')
+                .attr('class', 'touch-bar-group');
+
+        touchBarGroup
             .append('line');
+
+        touchBarGroup
+            .append('g')
+                .attr('class', 'legend')
+                .append('rect')
+                    .attr('class', 'legend-background');
 
         var dim = this.dim;
         var timeScale = this.timeScale;
@@ -62,31 +70,32 @@ var PlotSVG = React.createClass({
         var touchYScale = this.touchYScale;
         var colorScale = this.colorScale;
 
-        var touchBarLine = touchBar.select('line')
+        var touchBarLine = touchBarData.select('line')
             .attr('x1', function(touch){ return touch[0]; })
             .attr('x2', function(touch){ return touch[0]; })
             .attr('y1', function(touch){ return touchYScale(0); })
             .attr('y2', function(touch){ return touchYScale(1); });
 
-        var datasetGroup = touchBar.selectAll('.dataset-value')
+        var legend = touchBarData.select('.legend')
+            .attr('render-order', 1)
+            .attr('transform', function(dataset){
+                var touchBarPosition = parseFloat(touchBarLine.attr('x1'));
+                var barOffset = 5; // Get it off the touch bar
+                var width = this.getBBox().width;
+                var position = touchBarPosition + barOffset;
+                if(position + width > dim.width){
+                    position = touchBarPosition - (barOffset*2) - width; // Throw box to the left
+                }
+                return "translate("+position+", 0)";
+            });
+
+        var datasetGroup = legend.selectAll('.dataset-value')
             .data(DatasetsStore.datasets);
 
         datasetGroup.enter()
             .append('g')
                 .attr('class', 'dataset-value')
-                .append('text')
-                .append('rect');
-
-        var calculatePosition = function(dataset, i){
-            var touchBarPosition = parseFloat(touchBarLine.attr('x1'));
-            var barOffset = 5; // Get it off the touch bar
-            var datasetOffset = 40*i;  // Move each dataset to the right of the last one
-            var position = touchBarPosition + barOffset + datasetOffset;
-            if(position > (dim.width*0.9)){
-                position = touchBarPosition - 40 - datasetOffset;  // Shift to the left
-            }
-            return position;
-        };
+                .append('text');
 
         datasetGroup.select('text')
             .attr('stroke', function(dataset, i){
@@ -103,27 +112,34 @@ var PlotSVG = React.createClass({
                 var nearestPoint = _.find(data, function(datum){
                     return datum[0] > timeTarget;
                 });
-                return nearestPoint[1].toFixed(2);
-            })
-            .attr('x', calculatePosition)
-            .attr('y', function(dataset) {
-                return touchYScale(0.9);
-            });
 
-        datasetGroup.select('rect')
-            .attr('x', calculatePosition)
-            .attr('y', function(dataset) {
-                return touchYScale(0.9);
+                if(nearestPoint){
+                    return dataset.station_uri + " " + dataset.field.name + " " + nearestPoint[1] + " " + dataset.field.units;
+                } else {
+                    return "NO DATA";
+                }
             })
-            .attr('width', 40)
-            .attr('height', 20)
-            .attr('stroke', 'black')
-            .attr('fill', 'white')
-            .attr('fill-opacity', 0.5);
+            .attr('x', 0)
+            .attr('y', function(dataset, i) {
+                return (i+1)*this.getBBox().height;
+            })
+            .attr('dx', 5)
+            .attr('dy', 2);
+
+        var legendBackgroundMargin = 5;
+        legend.select('.legend-background')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', function(){
+                    return this.parentNode.getBBox().height;
+                })
+                .attr('width', function(){
+                    return this.parentNode.getBBox().width;
+                });
 
         datasetGroup.exit().remove();
 
-        touchBar.exit().remove();
+        touchBarData.exit().remove();
     },
 
     onDatasetsChange: function(range, datasets){
@@ -143,7 +159,7 @@ var PlotSVG = React.createClass({
         var datasetGroups = this.svg.selectAll('.dataset')
             .data(datasets);
 
-        datasetGroups.enter().append('g')
+        datasetGroups.enter().insert('g', '.touch-bar-group')
             .attr('class', 'dataset')
             .append('path').attr('class','line');
 

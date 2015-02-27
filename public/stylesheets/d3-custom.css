@@ -14,8 +14,14 @@
   stroke-width: 1.5px;
 }
 
-.touch-bar {
+.touch-bar-group line {
     fill: none;
     stroke: black;
     stroke-width: 1.5px;
+}
+
+.legend-background {
+    fill: rgba(255, 255, 255, 0.75);
+    stroke: black;
+    stroke-width: 1px;
 }
