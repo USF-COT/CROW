@@ -24,7 +24,9 @@ router.get('/', function(req, res, next) {
     });
 });
 
-var db = require('mongoskin').db('mongodb://localhost:27017/CROW');
+var config = require('config');
+
+var db = require('mongoskin').db(config.get('FEED_MONGO_URL'));
 
 router.get('/feeds', function(req, res, next){
     db.collection('feeds').find({}, {_id: 0}).toArray(function(err, result) {

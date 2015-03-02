@@ -13,6 +13,7 @@
     "bootstrap": "^3.3.2",
     "browserify-shim": "^3.8.2",
     "cookie-parser": "~1.3.3",
+    "cov": "^0.1.3",
     "debug": "~2.1.1",
     "express": "~4.11.1",
     "google-maps": "^2.1.1",
@@ -20,6 +21,8 @@
     "mongodb": "^1.4.31",
     "mongoskin": "^1.4.12",
     "morgan": "~1.5.1",
+    "node-config": "0.0.2",
+    "properties": "^1.2.1",
     "react": "^0.12.2",
     "reflux": "^0.2.5",
     "serve-favicon": "^2.2.0"
@@ -53,9 +56,18 @@
   },
   "browserify-shim": {
     "jquery": "global:$",
-    "bootstrap": {"depends": ["jquery"]},
+    "bootstrap": {
+      "depends": [
+        "jquery"
+      ]
+    },
     "moment": "global:moment",
-    "bootstrap-datetimepicker": {"depends": ["moment", "bootstrap"]},
+    "bootstrap-datetimepicker": {
+      "depends": [
+        "moment",
+        "bootstrap"
+      ]
+    },
     "lodash": "global:_",
     "react": "global:React",
     "d3": "global:d3"
