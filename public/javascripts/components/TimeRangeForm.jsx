@@ -42,12 +42,12 @@ var TimeRangeForm = React.createClass({
         return (
 <form className={this.props.formClass}>
     <div className="form-group">
-        <label for="startDate">From:</label>
+        <label htmlFor="startDate">From:</label>
         <input id="startDatePicker" name="startDate" type="text" className="form-control" />
     </div>
 
     <div className="form-group">
-        <label for="endDate">to</label>
+        <label htmlFor="endDate">to</label>
         <input id="endDatePicker" name="endDate" type="text" className="form-control" />
     </div>
 </form>

@@ -20,9 +20,9 @@ var PlotForm = React.createClass({
 
     getInitialState: function(){
         return {
-            "selected_source_url": null,
-            "selected_layer_uri": null,
-            "selected_field_uri": null,
+            "selected_source_url": "empty",
+            "selected_layer_uri": "empty",
+            "selected_field_uri": "empty",
             "sources": {}
         };
     },
@@ -37,15 +37,13 @@ var PlotForm = React.createClass({
     onFormSourceSelect: function(event){
         this.setState({
             "selected_source_url": event.target.value,
-            "selected_layer_uri": null,
-            "selected_field_uri": null
+            "selected_layer_uri": "empty"
         });
     },
 
     onFormLayerSelect: function(event){
         this.setState({
-            "selected_layer_uri": event.target.value,
-            "selected_field_uri": null
+            "selected_layer_uri": event.target.value
         });
     },
 
@@ -62,14 +60,14 @@ var PlotForm = React.createClass({
 
     render: function(){
         var emptyOption = (
-            <option value={null}></option>
+            <option key="empty" value={undefined}></option>
         );
 
         var sourceOptions = [];
         sourceOptions.push(emptyOption);
         _.each(this.props.visibleSources, function(source){
             sourceOptions.push(
-                <option value={source.url} selected={source.url === this.state.selected_source_url}>{source.provider.short_name}</option>
+                <option key={source.url} value={source.url}>{source.provider.short_name}</option>
             );
         }, this);
 
@@ -79,7 +77,7 @@ var PlotForm = React.createClass({
         if(layers){
             _.each(layers, function(layer){
                 layerOptions.push(
-                    <option value={layer.uri} selected={layer.uri === this.state.selected_layer_uri}>{layer.name}</option>
+                    <option key={layer.uri} value={layer.uri}>{layer.name}</option>
                 );
             }, this);
         }
@@ -90,7 +88,7 @@ var PlotForm = React.createClass({
         if(layer){
             _.each(layer.fields, function(field){
                 fieldOptions.push(
-                    <option value={field.uri} selected={field.uri === this.state.selected_field_uri}>{field.name}</option>
+                    <option key={field.uri} value={field.uri}>{field.name}</option>
                 );
             }, this);
         }
@@ -104,21 +102,21 @@ var PlotForm = React.createClass({
             </div>
             <div className="form-group">
                 <label className="sr-only">Data Source</label>
-                <select name="source_url" className="form-control plot-select" onChange={this.onFormSourceSelect}>
+                <select name="source_url" className="form-control plot-select" value={this.state.selected_source_url} onChange={this.onFormSourceSelect}>
                     {sourceOptions}
                 </select>
             </div>
 
             <div className="form-group">
                 <label className="sr-only">Layer</label>
-                <select name="layer_uri" className="form-control plot-select"  onChange={this.onFormLayerSelect}>
+                <select name="layer_uri" className="form-control plot-select"  value={this.state.selected_layer_uri} onChange={this.onFormLayerSelect}>
                     {layerOptions}
                 </select>
             </div>
 
             <div className="form-group">
                 <label className="sr-only">Field</label>
-                <select name="field_uri" className="form-control plot-select"  onChange={this.onFormFieldSelect}>
+                <select name="field_uri" className="form-control plot-select"  value={this.state.selected_field_uri} onChange={this.onFormFieldSelect}>
                     {fieldOptions}
                 </select>
             </div>

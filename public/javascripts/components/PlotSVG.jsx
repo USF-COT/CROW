@@ -221,8 +221,8 @@ var PlotSVG = React.createClass({
 
     render: function(){
         return (
-<div class="row">
-    <div class="col-md-12">
+<div className="row">
+    <div className="col-md-12">
         <svg id="plots-area"></svg>
     </div>
 </div>

@@ -19,7 +19,7 @@ var PlotPanel = React.createClass({
         return (
 <div id="plot-region">
     <div id="plot-container" className="control-box">
-        <div class="plot-panel" className="panel">
+        <div className="plot-panel panel">
             <div className="panel-heading">
                 <PlotForm visibleSources={this.state.visibleSources} datasetsStore={this.state.datasetsStore} />
             </div>
