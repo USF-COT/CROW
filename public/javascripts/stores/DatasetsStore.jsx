@@ -58,11 +58,18 @@ var DatasetsStore = Reflux.createStore({
         }
     },
 
+    setColors: function(){
+        this.state.datasets.forEach(function(dataset, i){
+            dataset.color = this.state.colors(i % 10);
+        }, this);
+    },
+
     onRemoveDataset: function(dataset){
         var index = this.findDatasetIndex(dataset.source_url, dataset.layer_uri, dataset.field_uri);
 
         if(index >= 0){
             this.state.datasets.splice(index, 1);
+            this.setColors();
             this.trigger(this.state);
         } else {
             console.log("Bad index passed to remove datasets action: " + index);
