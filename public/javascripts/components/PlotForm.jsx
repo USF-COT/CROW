@@ -5,11 +5,13 @@ var Actions = require('../actions.jsx');
 var VisibleSourcesStore = require('../stores/VisibleSourcesStore.jsx');
 var SelectedLayerStore = require('../stores/SelectedLayerStore.jsx');
 
+var EditPlotsModal = require('./EditPlotsModal.jsx');
+
 var _ = require('lodash');
 var $ = require('jquery');
 
 var PlotForm = React.createClass({
-    mixins: [Reflux.connect(VisibleSourcesStore, "sources"), Reflux.listenTo(SelectedLayerStore, "onLayerSelect")],
+    mixins: [Reflux.listenTo(SelectedLayerStore, "onLayerSelect")],
 
     onPlotFormSubmit: function(e){
         e.preventDefault();
@@ -65,7 +67,7 @@ var PlotForm = React.createClass({
 
         var sourceOptions = [];
         sourceOptions.push(emptyOption);
-        _.each(this.state.sources, function(source){
+        _.each(this.props.visibleSources, function(source){
             sourceOptions.push(
                 <option value={source.url} selected={source.url === this.state.selected_source_url}>{source.provider.short_name}</option>
             );
@@ -95,8 +97,8 @@ var PlotForm = React.createClass({
 
         return (
 <div className="row">
-    <div className="col-md-12">
-        <form className="form-inline" onSubmit={this.onPlotFormSubmit}>
+    <div className="col-md-10">
+        <form id="plotForm" className="form-inline" onSubmit={this.onPlotFormSubmit}>
             <div className="form-group">
                 <h4 id="plot-panel-title">Plot Data</h4>
             </div>
@@ -120,8 +122,13 @@ var PlotForm = React.createClass({
                     {fieldOptions}
                 </select>
             </div>
-            <button className="btn btn-primary" type="submit">Plot</button>
+            <button className="btn btn-primary" type="submit" form="plotForm"><i className="fa fa-line-chart"></i> Plot</button>
         </form>
+    </div>
+    <div className="col-md-2">
+        <div className="pull-right">
+            <EditPlotsModal datasetsStore={this.props.datasetsStore} />
+        </div>
     </div>
 </div>
         );

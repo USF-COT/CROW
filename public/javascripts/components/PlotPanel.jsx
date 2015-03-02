@@ -1,10 +1,19 @@
 var React = require('react');
+var Reflux = require('reflux');
+
 var MapPanelMixin = require('./MapPanelMixin.jsx');
 var PlotForm = require('./PlotForm.jsx');
 var PlotSVG = require('./PlotSVG.jsx');
 
+var VisibleSourcesStore = require('../stores/VisibleSourcesStore.jsx');
+var DatasetsStore = require('../stores/DatasetsStore.jsx');
+
 var PlotPanel = React.createClass({
-    mixins: [MapPanelMixin],
+    mixins: [
+        MapPanelMixin,
+        Reflux.connect(VisibleSourcesStore, "visibleSources"),
+        Reflux.connect(DatasetsStore, "datasetsStore")
+    ],
 
     render: function(){
         return (
@@ -12,10 +21,10 @@ var PlotPanel = React.createClass({
     <div id="plot-container" className="control-box">
         <div class="plot-panel" className="panel">
             <div className="panel-heading">
-                <PlotForm />
+                <PlotForm visibleSources={this.state.visibleSources} datasetsStore={this.state.datasetsStore} />
             </div>
             <div className="container-fluid">
-                <PlotSVG />
+                <PlotSVG datasetsStore={this.state.datasetsStore} />
             </div>
         </div>
     </div>

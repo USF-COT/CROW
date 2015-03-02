@@ -8,29 +8,34 @@ var $ = require('jquery');
 var moment = require('moment');
 
 var TimeRangeForm = React.createClass({
-    mixins: [Reflux.listenTo(TimeRangeStore, "onRangeChange")],
+    mixins: [Reflux.connect(TimeRangeStore, "range")],
 
-    onRangeChange: function(range){
-        $('#startDatePicker').data("DateTimePicker").date(range.start);
-        $('#endDatePicker').data("DateTimePicker").date(range.end);
+    shouldComponentUpdate: function(){
+        return false;
+    },
+
+    componentWillReceiveProps: function(props){
+        $('#startDatePicker').data("DateTimePicker").date(this.state.range.start);
+        $('#endDatePicker').data("DateTimePicker").date(this.state.range.end);
     },
 
     componentDidMount: function(){
         $('#startDatePicker').datetimepicker();
         $('#endDatePicker').datetimepicker();
 
-        $('#startDatePicker').on("dp.change", function(e){
+        var range = this.state.range;
+        $('#startDatePicker').on("dp.change", null, range, function(e){
             $('#endDatePicker').data("DateTimePicker").minDate(e.date);
-            Actions.timeRangeChanged(e.date, TimeRangeStore.range.end);
+            Actions.timeRangeChanged(e.date, e.data.end);
         });
 
-        $('#endDatePicker').on("dp.change", function(e){
+        $('#endDatePicker').on("dp.change", null, range, function(e){
             $('#startDatePicker').data("DateTimePicker").maxDate(e.date);
-            Actions.timeRangeChanged(TimeRangeStore.range.start, e.date);
+            Actions.timeRangeChanged(e.data.start, e.date);
         });
 
-        $('#startDatePicker').data("DateTimePicker").date(TimeRangeStore.range.start);
-        $('#endDatePicker').data("DateTimePicker").date(TimeRangeStore.range.end);
+        $('#startDatePicker').data("DateTimePicker").date(range.start);
+        $('#endDatePicker').data("DateTimePicker").date(range.end);
     },
 
     render: function(){

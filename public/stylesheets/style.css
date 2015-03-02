@@ -141,3 +141,8 @@ h1, h2, h3{
 .plot-select{
     width: 100px;
 }
+
+.table-swatch{
+    width: 100%;
+    height: 100%;
+}

@@ -1,14 +1,9 @@
 var React = require('react');
-var Reflux = require('reflux');
-
-var DatasetsStore = require('../stores/DatasetsStore.jsx');
 
 var d3 = require('d3');
 var _ = require('lodash');
 
 var PlotSVG = React.createClass({
-    mixins: [Reflux.ListenerMixin],
-
     margins: {
         'top': 0,
         'right': 10,
@@ -16,9 +11,13 @@ var PlotSVG = React.createClass({
         'left': 10
     },
 
+    shouldComponentUpdate: function(){
+        return false;
+    },
+
     setupAxis: function(){
         this.timeScale = d3.time.scale.utc()
-            .domain([DatasetsStore.range.start.toDate(), DatasetsStore.range.end.toDate()])
+            .domain([this.props.datasetsStore.range.start.toDate(), this.props.datasetsStore.range.end.toDate()])
             .range([this.margins.left, this.dim.width + this.margins.left]);
         this.timeScale.ticks(d3.time.hour, 12);
 
@@ -35,8 +34,6 @@ var PlotSVG = React.createClass({
         this.touchYScale = d3.scale.linear()
             .domain([0, 1])
             .range([(this.margins.top + this.dim.height), this.margins.top]);
-
-        this.colorScale = d3.scale.category10();
     },
 
     onTouch: function(){
@@ -72,7 +69,6 @@ var PlotSVG = React.createClass({
         var timeScale = this.timeScale;
         var yScale = this.yScale;
         var touchYScale = this.touchYScale;
-        var colorScale = this.colorScale;
 
         var touchBarLine = touchBarData.select('line')
             .attr('x1', function(touch){ return touch[0]; })
@@ -106,7 +102,7 @@ var PlotSVG = React.createClass({
             .attr('dy', 2);
 
         var datasetGroup = legend.selectAll('.dataset-value')
-            .data(DatasetsStore.datasets);
+            .data(this.props.datasetsStore.datasets);
 
         datasetGroup.enter()
             .append('g')
@@ -114,11 +110,11 @@ var PlotSVG = React.createClass({
                 .append('text');
 
         datasetGroup.select('text')
-            .attr('stroke', function(dataset, i){
-                return colorScale(i % 10);
+            .attr('stroke', function(dataset){
+                return dataset.color;
             })
-            .attr('fill', function(dataset, i){
-                return colorScale(i % 10);
+            .attr('fill', function(dataset){
+                return dataset.color;
             })
             .text(function(dataset){
                 var timeTarget = timeScale.invert(parseFloat(touchBarLine.attr('x1'))).getTime()/1000;
@@ -158,7 +154,10 @@ var PlotSVG = React.createClass({
         touchBarData.exit().remove();
     },
 
-    onDatasetsChange: function(range, datasets){
+    componentWillReceiveProps: function(props){
+        var range = props.datasetsStore.range;
+        var datasets = props.datasetsStore.datasets;
+
         // Update time scale
         this.timeScale.domain([range.start.toDate(), range.end.toDate()]);
 
@@ -170,7 +169,6 @@ var PlotSVG = React.createClass({
         // Update plots
         var timeScale = this.timeScale;
         var yScale = this.yScale;
-        var colorScale = this.colorScale;
 
         var datasetGroups = this.svg.selectAll('.dataset')
             .data(datasets);
@@ -180,8 +178,8 @@ var PlotSVG = React.createClass({
             .append('path').attr('class','line');
 
         datasetGroups.select('path')
-                .attr('stroke', function(dataset, i){
-                    return colorScale(i % 10);
+                .attr('stroke', function(dataset){
+                    return dataset.color;
                 })
                 .attr('d', function(dataset){
                     yScale.domain([0 , 1]);
@@ -219,8 +217,6 @@ var PlotSVG = React.createClass({
         this.svg
             .on('touchmove', this.onTouch)
             .on('mousemove', this.onMouse);
-
-        this.listenTo(DatasetsStore, this.onDatasetsChange);
     },
 
     render: function(){

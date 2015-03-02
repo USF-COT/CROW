@@ -5,20 +5,20 @@ var moment = require('moment');
 
 var TimeRangeStore = Reflux.createStore({
     init: function(){
-        this.range = {
-            "start": moment().subtract(5, 'days'),
-            "end": moment()
-        };
-
+        this.range = this.getInitialState();
         this.listenTo(Actions.timeRangeChanged, this.onTimeRangeChanged);
     },
 
-    onTimeRangeChanged: function(startDate, endDate){
-        this.range = {
-            "start": startDate,
-            "end": endDate
+    getInitialState: function(){
+        return {
+            "start": moment().subtract(5, 'days'),
+            "end": moment()
         };
+    },
 
+    onTimeRangeChanged: function(startDate, endDate){
+        this.range.start = startDate;
+        this.range.end = endDate;
         this.trigger(this.range);
     }
 });

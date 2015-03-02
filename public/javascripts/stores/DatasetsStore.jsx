@@ -8,11 +8,7 @@ var d3 = require('d3');
 
 var DatasetsStore = Reflux.createStore({
     init: function(){
-        this.range = TimeRangeStore.range;
-        this.datasets = [];
-
-        this.colors = d3.scale.category10();
-
+        this.state = this.getInitialState();
         this.listenTo(Actions.addDataset, this.onAddDataset);
         this.listenTo(Actions.removeDataset, this.onRemoveDataset);
 
@@ -20,6 +16,14 @@ var DatasetsStore = Reflux.createStore({
         this.listenTo(Actions.loadDataset.completed, this.onDatasetLoaded);
         this.listenTo(Actions.loadDataset.failed, this.onDatasetLoadFailed);
         this.listenTo(TimeRangeStore, this.onTimeRangeChange);
+    },
+
+    getInitialState: function(){
+        return {
+            "range": TimeRangeStore.getInitialState(),
+            "datasets": [],
+            "colors": d3.scale.category10()
+        };
     },
 
     _retrieveDataset: function(source_url, layer_uri, field_uri, range){
@@ -38,7 +42,7 @@ var DatasetsStore = Reflux.createStore({
     },
 
     onDatasetLoadRequest: function(source_url, layer_uri, field_uri){
-        var promise = this._retrieveDataset(source_url, layer_uri, field_uri, this.range);
+        var promise = this._retrieveDataset(source_url, layer_uri, field_uri, this.state.range);
 
         promise.then(function(dataset){
                 Actions.loadDataset.completed(dataset, source_url, layer_uri, field_uri);
@@ -54,17 +58,19 @@ var DatasetsStore = Reflux.createStore({
         }
     },
 
-    onRemoveDataset: function(index){
-        if(index > 0 && index < datasets.length){
-            this.datasets.splice(index);
-            this.trigger(this.range, this.datasets);
+    onRemoveDataset: function(dataset){
+        var index = this.findDatasetIndex(dataset.source_url, dataset.layer_uri, dataset.field_uri);
+
+        if(index >= 0){
+            this.state.datasets.splice(index, 1);
+            this.trigger(this.state);
         } else {
             console.log("Bad index passed to remove datasets action: " + index);
         }
     },
 
     findDatasetIndex: function(source_url, layer_uri, field_uri){
-        return _.findIndex(this.datasets, {
+        return _.findIndex(this.state.datasets, {
             'source_url': source_url,
             'layer_uri': layer_uri,
             'field_uri': field_uri
@@ -80,17 +86,17 @@ var DatasetsStore = Reflux.createStore({
         var index = this.findDatasetIndex(source_url, layer_uri, field_uri);
         // Update existing
         if(index != -1){
-            dataset.color = this.colors(index % 10);
-            this.datasets[index] = dataset;
+            dataset.color = this.state.colors(index % 10);
+            this.state.datasets[index] = dataset;
         } else { // Insert new dataset
-            dataset.color = this.colors(this.datasets.length % 10);
-            this.datasets.push(dataset);
+            dataset.color = this.state.colors(this.state.datasets.length % 10);
+            this.state.datasets.push(dataset);
         }
     },
 
     onDatasetLoaded: function(dataset, source_url, layer_uri, field_uri){
         this.addDataset(dataset, source_url, layer_uri, field_uri);
-        this.trigger(this.range, this.datasets);
+        this.trigger(this.state);
     },
 
     onDatasetLoadFailed: function(response){
@@ -98,11 +104,11 @@ var DatasetsStore = Reflux.createStore({
     },
 
     onTimeRangeChange: function(range){
-        this.range = range;
+        this.state.range = range;
 
         // Reload all plotted datasets
         var promises = [];
-        this.datasets.forEach(function(dataset, i){
+        this.state.datasets.forEach(function(dataset, i){
             var promise = this._retrieveDataset(dataset.source_url, dataset.layer_uri, dataset.field_uri, range);
             var context = this;
             promise.then(function(new_dataset){
@@ -114,7 +120,7 @@ var DatasetsStore = Reflux.createStore({
 
         var context = this;
         $.when.apply($, promises).done(function(){
-            context.trigger(context.range, context.datasets);
+            context.trigger(context.state);
         });
     }
 });
