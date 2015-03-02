@@ -3,11 +3,12 @@ var Reflux = require('reflux');
 
 var Actions = require('../actions.jsx');
 
-var ExportDatasetsForm = require('./ExportDatasetsForm.jsx');
-
 var EditPlotsRow = React.createClass({
     exportClicked: function(e){
         var content = "data:text/csv;charset=utf-8,";
+
+        content += "Unix Timestamp,Timestamp," + this.props.dataset.field_uri + "\r\n";
+
         this.props.dataset.data.forEach(function(point){
             content += point[0] + ",";
             content += moment(point[0] * 1000).format() + ",";
@@ -34,7 +35,7 @@ var EditPlotsRow = React.createClass({
     <td>{this.props.dataset.layer_uri}</td>
     <td>{this.props.dataset.field.name}</td>
     <td><button className="btn btn-danger" onClick={this.removeClicked}><i className="fa fa-minus"></i> Remove</button></td>
-    <td><a download={downloadName} target="_blank" className="btn btn-info" onClick={this.exportClicked}><i className="fa fa-download"></i> Export</a></td>
+    <td><a download={downloadName} target="_blank" className="btn btn-info" onClick={this.exportClicked}><i className="fa fa-download"></i> Export as CSV</a></td>
 </tr>
         );
     }
