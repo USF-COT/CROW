@@ -22,8 +22,8 @@ var KMLLayerStore = Reflux.createStore({
     },
 
     _genURL: function(source_url, layer_uri){
-        var url = "http://" + source_url + "/layer/" + layer_uri + "/kml";
-        url += "?start=" + TimeRangeStore.range.start.unix();
+        var url = "http://" + source_url + "/kml?layer_uri=" + layer_uri;
+        url += "&start=" + TimeRangeStore.range.start.unix();
         url += "&end=" + TimeRangeStore.range.end.unix();
         return url;
     },

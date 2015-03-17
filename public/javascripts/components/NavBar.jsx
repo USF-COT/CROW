@@ -60,7 +60,8 @@ var NavBarDropDown = React.createClass({
 
         var sourceLayers = [];
         _.each(categorizedLayers, function(layers, category){
-            var layerItems = layers.map(function(layer){
+            var sortedLayers = _.sortBy(layers, "name");
+            var layerItems = sortedLayers.map(function(layer){
                 return (
                     <LayerItem key={layer.uri} source={this.props.source} layer={layer} />
                 );

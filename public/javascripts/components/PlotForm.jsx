@@ -65,7 +65,10 @@ var PlotForm = React.createClass({
 
         var sourceOptions = [];
         sourceOptions.push(emptyOption);
-        _.each(this.props.visibleSources, function(source){
+        var sortedSources = _.sortBy(this.props.visibleSources, function(source){
+            return source.provider.short_name;
+        });
+        _.each(sortedSources, function(source){
             sourceOptions.push(
                 <option key={source.url} value={source.url}>{source.provider.short_name}</option>
             );
@@ -75,7 +78,8 @@ var PlotForm = React.createClass({
         layerOptions.push(emptyOption);
         layers = VisibleSourcesStore.getLayers(this.state.selected_source_url);
         if(layers){
-            _.each(layers, function(layer){
+            var sortedLayers = _.sortBy(layers, "name");
+            _.each(sortedLayers, function(layer){
                 layerOptions.push(
                     <option key={layer.uri} value={layer.uri}>{layer.name}</option>
                 );
@@ -86,9 +90,10 @@ var PlotForm = React.createClass({
         fieldOptions.push(emptyOption);
         var layer = VisibleSourcesStore.getLayer(this.state.selected_source_url, this.state.selected_layer_uri);
         if(layer){
-            _.each(layer.fields, function(field){
+            var sortedFields = _.sortBy(layer.fields, "name");
+            _.each(sortedFields, function(field){
                 fieldOptions.push(
-                    <option key={field.uri} value={field.uri}>{field.name}</option>
+                    <option key={field.uri} value={field.uri}>{field.name} ({field.units})</option>
                 );
             }, this);
         }

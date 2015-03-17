@@ -126,7 +126,11 @@ var PlotSVG = React.createClass({
                 });
 
                 if(nearestPoint){
-                    return dataset.station_uri + " " + dataset.field.name + " " + nearestPoint[1] + " " + dataset.field.units;
+                    var label = dataset.station_uri + " " + dataset.field.name + " " + nearestPoint[1].toFixed(2);
+                    if(dataset.field.units){
+                        label += " " + dataset.field.units;
+                    }
+                    return label;
                 } else {
                     return "NO DATA";
                 }
