@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "watch-js": "watchify public/javascripts/client.jsx -o public/javascripts/bundle.js -v -d",
-    "start": "NODE_ENV=development node ./bin/www",
-    "build": "NODE_ENV=production browserify public/javascripts/client.jsx | uglifyjs -cm > public/javascripts/bundle.min.js",
-    "start-prod": "NODE_ENV=production node ./bin/www",
+    "start": "NODE_ENV=production node ./bin/www",
+    "start-dev": "NODE_ENV=development node ./bin/www",
+    "postinstall": "NODE_ENV=production browserify public/javascripts/client.jsx | uglifyjs -cm > public/javascripts/bundle.min.js",
     "deploy": "sudo -u crow rm -rf /opt/crow/* && sudo -u crow cp -r app.js package.json bin/ config/ public/ routes/ views/ /opt/crow && cd /opt/crow && sudo -u crow HOME=/home/crow npm install",
     "test": "jest"
   },
